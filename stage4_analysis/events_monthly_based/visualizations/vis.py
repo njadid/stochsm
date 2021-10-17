@@ -25,18 +25,18 @@ def read_pickle(fn):
 
 month = int(sys.argv[1])
 
-pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/summary/{month}.pickle'
+pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/summary_2005_2020/{month}.pickle'
 
 fn_st_grid_masked = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/data/gis_files/st4/stage4_grid_new.shp'
 fn_us_states = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/data/gis_files/conus/conus_states.geojson'
 
 var_list = {
-    # 'tr':       {'max':48, 'min':0, 'label': 'Mean Event Duration [$hr$]', 'bw':6,'nbins':8, 'cmap':'Blues' },
-    # 'i':        {'max':5, 'min':0, 'label': 'Mean Intensity [$mm/hr$]', 'bw':1,'nbins':10,'cmap':'Blues'},
-    # 'tb':       {'max':360, 'min':0, 'label': 'Mean Interarrival Time [$hr$]', 'bw':12, 'nbins':15, 'cmap':'Reds'},
+    'tr':       {'max':48, 'min':0, 'label': 'Mean Event Duration [$hr$]', 'bw':6,'nbins':8, 'cmap':'Blues' },
+    'i':        {'max':5, 'min':0, 'label': 'Mean Intensity [$mm/hr$]', 'bw':1,'nbins':10,'cmap':'Blues'},
+    'tb':       {'max':360, 'min':0, 'label': 'Mean Interarrival Time [$hr$]', 'bw':12, 'nbins':15, 'cmap':'Reds'},
     'h':        {'max':23, 'min':3, 'label': 'Mean Storm Depth [$mm$]', 'bw':3,'nbins':20, 'cmap':'Blues'},
-    # 'count':    {'max':15, 'min':0, 'label': 'Mean Number of Events', 'bw':1,'nbins':15, 'cmap':'Blues'},
-    # 'CV':       {'max':1.2, 'min':0.80, 'label': 'Coef. Var.', 'bw':0.05,'nbins':8, 'cmap':'RdBu'}
+    'count':    {'max':15, 'min':0, 'label': 'Mean Number of Events', 'bw':1,'nbins':15, 'cmap':'Blues'},
+    'CV':       {'max':1.2, 'min':0.80, 'label': 'Coef. Var.', 'bw':0.05,'nbins':8, 'cmap':'RdBu'}
     }
 # '''
 # 'lambda':   {'max':0.26, 'min':0, 'label': 'RMSE [$cm^3/cm^3$]',     'bw':0.01, 'nbins':13, 'cmap':'YlOrRd' },
@@ -68,8 +68,8 @@ for variable in list(var_list.keys()):
         
 
 
-    out_pth = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/figures/st4/summary_mbased/{variable}/'.format(variable = variable)
-    out_fn = '{variable}_{month}_new1.jpg'.format(variable = variable, month=month)
+    out_pth = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/figures/st4/summary_mbased_2005_2020/{variable}/'.format(variable = variable)
+    out_fn = '{variable}_{month}.jpg'.format(variable = variable, month=month)
 
     if not os.path.exists(out_pth):
         os.makedirs(out_pth)

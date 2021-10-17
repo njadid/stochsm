@@ -16,7 +16,7 @@ def read_pickle(fn):
 
 
 #####
-pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/monthly/{month}_new.pickle'
+pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/monthly/{month}_2005_2020.pickle'
 in_pick_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/{year}_new.pickle'
 #
 #####
@@ -24,7 +24,7 @@ month = int(sys.argv[1])
 # month = 1
 
 ### Generate year list and shuffle for avoiding I/O problems
-year_list = np.arange(2000,2021)
+year_list = np.arange(2005,2021)
 np.random.seed()
 np.random.shuffle(year_list)
 ###
@@ -55,5 +55,5 @@ with open(fn_out_pickle, 'wb') as handle:
                                 intensity = m_vec[3]
                                 n_events = len(event_dur)
                                 for i in range(n_events):
-                                    _events_all.append([grid_xy, event_dur[i],intensity[i],dry_vec[i]])
+                                    _events_all.append([grid_xy, year, month, event_dur[i],intensity[i],dry_vec[i]])
         pickle.dump(_events_all, handle, protocol= pickle.HIGHEST_PROTOCOL) 

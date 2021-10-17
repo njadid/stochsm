@@ -24,9 +24,9 @@ def read_pickle(fn):
 month = int(sys.argv[1])
 
 
-pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/monthly/{month}_new.pickle'
+pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/monthly/{month}_2005_2020.pickle'
 
-summary_path = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/summary'
+summary_path = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/stage4_analysis/events_mbased/summary_2005_2020'
 if not os.path.exists(summary_path):
     os.makedirs(summary_path)
 
@@ -39,11 +39,11 @@ for d in data:
     data_all.extend(d)
 
 
-events_all = pd.DataFrame(data_all, columns=['grid_xy','tr', 'i', 'tb'])
+events_all = pd.DataFrame(data_all, columns=['grid_xy','year', 'month','tr', 'i', 'tb'])
 events_all['h'] = events_all['i'] * events_all['tr']
 
 ### Filter the events that are less than 3 mm depth
-events_all = events_all[events_all['h'].values > 3]
+# events_all = events_all[events_all['h'].values > 3]
 
 ######### Aggregations #########
 summary = events_all.groupby('grid_xy').mean().reset_index()       # mean
@@ -56,7 +56,7 @@ counts = events_all.groupby('grid_xy').count().reset_index()            # count
 summary['CV'] = summary_std['tb']/summary['tb']
 summary['lambda'] = summary['h']/np.power(summary_std['h'],2)
 summary['kappa'] = summary['h'] * summary['lambda']
-summary['count'] = counts['tr']/21
+summary['count'] = counts['tr']/16
 
 
 
