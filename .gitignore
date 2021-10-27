@@ -7,3 +7,4 @@
 !*.ipynb
 !*.sh
 !*/
+notebooks/functions/HydroEvaluate
