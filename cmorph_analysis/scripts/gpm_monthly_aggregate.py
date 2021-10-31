@@ -1,8 +1,8 @@
 import pickle
 import numpy as np
+
 import os
 import sys
-
 # Reorganize data by month
 def read_pickle(fn):
     data_test = []
@@ -16,15 +16,14 @@ def read_pickle(fn):
 
 
 #####
-pickle_fmt =  '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm/events/monthly/{month}.pickle'
-in_pick_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm/events/yearly/{year}.pickle'
+pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/events_mbased/monthly/{month}.pickle'
+in_pick_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/events_mbased/yearly/{year}.pickle'
 
 #####
-
 month = int(sys.argv[1])
 
 ### Generate year list and shuffle for avoiding I/O problems in multiple job submissions
-year_list = np.arange(2001,2021)
+year_list = np.arange(2000,2021)
 np.random.seed()
 np.random.shuffle(year_list)
 ###
