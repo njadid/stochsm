@@ -1,7 +1,7 @@
 #PBS -N GPM_2          # job name
 #PBS -A GT-rbras6-CODA20               # account to which job is charged, ex: GT-gburdell3
 #PBS -l nodes=1:ppn=1           # number of nodes and cores per node required
-#PBS -l mem=256gb                # memory per core
+#PBS -l mem=312gb                # memory per core
 #PBS -l walltime=10:00:00      # duration of the job (ex: 15 min)
 #PBS -j oe                      # combine output and error messages into 1 file
 #PBS -o GPM_2      # output file name

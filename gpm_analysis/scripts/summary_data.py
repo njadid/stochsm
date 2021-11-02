@@ -18,9 +18,9 @@ def read_pickle(fn):
 
 month = int(sys.argv[1])
 
-pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/events_mbased/monthly/{month}.pickle'
+pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm/events/monthly/{month}.pickle'
 
-summary_path = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/events_mbased/summary'
+summary_path = '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm/events/summary/'
 if not os.path.exists(summary_path):
     os.makedirs(summary_path)
 
