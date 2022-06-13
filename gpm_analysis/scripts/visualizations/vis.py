@@ -1,15 +1,18 @@
 import os
 import sys
 import pickle
-import numpy as np
 import pandas as pd
-import itertools
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib import ticker
 from datetime import datetime
 import geopandas as gpd
-
+import numpy as np
+import h5py
+import cartopy.crs as ccrs
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+import matplotlib.ticker as mticker
+import glob
 
 def read_pickle(fn):
     data_test = []
@@ -22,17 +25,6 @@ def read_pickle(fn):
     return data_test
 
 
-
-# month = 5
-month = int(sys.argv[1])
-
-pickle_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/persiann_analysis/events_mbased/summary/{month}.pickle'
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-
-
-fn_st_grid_masked = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/data/gis_files/persiann/grid.shp'
-# fn_us_states = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/data/gis_files/conus/conus_states.geojson'
-
 var_list = {
     'tr':       {'max':48, 'min':0, 'label': 'Mean Event Duration [$hr$]', 'bw':6,'nbins':8, 'cmap':'Blues' },
     'i':        {'max':5, 'min':0, 'label': 'Mean Intensity [$mm/hr$]', 'bw':1,'nbins':10,'cmap':'Blues'},
@@ -41,49 +33,87 @@ var_list = {
     'count':    {'max':15, 'min':0, 'label': 'Mean Number of Events', 'bw':1,'nbins':15, 'cmap':'Blues'},
     'CV':       {'max':1.2, 'min':0.80, 'label': 'Coef. Var.', 'bw':0.05,'nbins':8, 'cmap':'RdBu'}
     }
-# '''
-# 'lambda':   {'max':0.26, 'min':0, 'label': 'RMSE [$cm^3/cm^3$]',     'bw':0.01, 'nbins':13, 'cmap':'YlOrRd' },
-# 'kappa':    {'max':0.25, 'min':0,  'label': 'MAE [$cm^3/cm^3$]',     'bw':0.01,'nbins':13,'cmap':'Greens'},
-# 'cv_tb':    {'max':1.2, 'min':0.8, 'label': '$CV_{tb}$', 'bw':.04,'nbins':10, 'cmap':'RdBu' }}'''
+
+# month = int(sys.argv[1])
+month = 2
+
+fn_fmt = '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm/events/summary_mean/{month}.pickle'
+fn = fn_fmt.format(month = month)
+summary_mean = read_pickle(fn)
+summary_mean = summary_mean[0]
+
+data = dict()
+for var in list(var_list.keys()):
+        data[var] = np.ones((3600,1800))*np.nan
+
+for item in summary_mean.iterrows():    
+    grid_y = int(item[1]['grid_xy'] % 10000)
+    grid_x = int((item[1]['grid_xy'] - grid_y)/ 10000 % 10000)
+
+    for var in list(var_list.keys()):
+        data[var][grid_x, grid_y] = item[1][var]
+
+
+fn_list = sorted(
+    glob.glob(
+    '/storage/coda1/p-rbras6/0/njadidoleslam3/gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHH.06/{year}/*/*.HDF5'.format(year=2002)
+            )
+        )
+fn = fn_list[0]
+f = h5py.File(fn, 'r')
+theLats = f['Grid/lat'][:]
+theLons = f['Grid/lon'][:]
+x, y = np.float32(np.meshgrid(theLons, theLats))
 
 
 
-
-grid_masked = gpd.read_file(fn_st_grid_masked)
-
-
-in_pickle = pickle_fmt.format(month = month)
-summary = read_pickle(in_pickle)
-summary = summary[0]
-summary['grid_xy'] = summary['grid_xy'].astype(np.int64)
-data = grid_masked.merge(summary)
 
 for variable in list(var_list.keys()):
-        
-
-
-    out_pth = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/figures/persiann/summary/{variable}/'.format(variable = variable)
+    out_pth = '/storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/figures/gpm/summary/{variable}/'.format(variable = variable)
     out_fn = '{variable}_{month}.jpg'.format(variable = variable, month=month)
 
     if not os.path.exists(out_pth):
         os.makedirs(out_pth)
 
-    fn_temp = '{variable}.png'
-    cm1 = plt.cm.get_cmap(var_list[variable]['cmap'],var_list[variable]['nbins']-0)
-    fig, ax = plt.subplots(figsize=(20, 16))
+    precip = data[variable]
+    precip = np.transpose(precip)
 
-    a = data.plot(ax=ax, column = variable, edgecolor = 'none', cmap = cm1, vmin = var_list[variable]['min'], vmax=var_list[variable]['max'], zorder = 0)
-    world.plot(ax=ax, facecolor="none", edgecolor="black", zorder = 1, alpha=0.2)
+    
+    cm1 = plt.cm.get_cmap(var_list[variable]['cmap'],var_list[variable]['nbins']-0)
+    # fig, ax = plt.subplots(figsize=(20, 16))
+
+    fig = plt.figure(figsize=(20,16))
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    # ax.set_extent([-180,180,-60,60])  
+
+    # Add coastlines and formatted gridlines
+    ax.coastlines(resolution="110m",linewidth=1)
+    gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                    linewidth=1, color='black', linestyle='--')
+    gl.xlabels_top = False
+    gl.ylabels_right = False
+    gl.xlines = True
+    gl.xlocator = mticker.FixedLocator([-180, -90, 0, 90, 180])
+    gl.ylocator = mticker.FixedLocator([-60, -50, -25, 0, 25, 50, 60])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    gl.xlabel_style = {'size':16, 'color':'black'}
+    gl.ylabel_style = {'size':16, 'color':'black'}
+
+    # Set contour levels and draw the plot
+    clevs = np.arange(var_list[variable]['min'], var_list[variable]['max'] + var_list[variable]['max']/var_list[variable]['nbins'],var_list[variable]['max']/var_list[variable]['nbins'])
+    plt.contourf(x, y, precip, clevs, cmap=cm1)
+
     
     ax.set_axis_off()
     dt_str = '2020-{month}-1'.format(month = month)
     mnth_name = pd.to_datetime(dt_str).month_name()
     ax.set_xlim([-180, 180])
-    ax.set_ylim([-60, 60])
+    # ax.set_ylim([-60, 60])
 
     ax.text(0.46,-0.25, mnth_name,transform=ax.transAxes, fontsize=30)
     cax = fig.add_axes([0.15, 0.2, 0.75, 0.04])
-    fig.colorbar( a.collections[0], cax=cax, orientation='horizontal')
+    plt.colorbar(ax=ax, orientation='horizontal')
     cax.set_xlabel(var_list[variable]['label'], fontsize=20)
 
     cax.tick_params(labelsize=18)
@@ -103,8 +133,6 @@ for variable in list(var_list.keys()):
 
     cax.xaxis.set_major_locator(ticker.FixedLocator(x_d))
     cax.xaxis.set_major_formatter(ticker.FixedFormatter(labels))
-    # cax.set_xticks(x_d)
-    # cax.set_xticklabels([str(x) for x in x_d])
     fn_out = os.path.join(out_pth,out_fn)
     fig.savefig(fn_out, dpi=300, bbox_inches='tight')
     plt.close(fig)

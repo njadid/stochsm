@@ -1,7 +1,7 @@
 ## PBS -N ST4_$1          # job name
 #PBS -A GT-rbras6-CODA20               # account to which job is charged, ex: GT-gburdell3
 #PBS -l nodes=1:ppn=1           # number of nodes and cores per node required
-#PBS -l mem=128gb                # memory per core
+#PBS -l mem=46gb                # memory per core
 #PBS -l walltime=3:00:00      # duration of the job (ex: 15 min)
 #PBS -j oe                      # combine output and error messages into 1 file
 ##PBS -o ST4_().out      # output file name
@@ -14,4 +14,4 @@
 source activate ~/venvs/spatialenv
 
 /bin/echo month $1
-python /storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/scripts/summary_data.py $1
+python /storage/coda1/p-rbras6/0/njadidoleslam3/projects/stochsm/gpm_analysis/scripts/summary_mean.py $1
